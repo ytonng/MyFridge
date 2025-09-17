@@ -1,0 +1,19 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MyFridge" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- This will apply to all MaterialButtons -->
+        <item name="materialButtonStyle">@style/MyFridge.Button</item>
+    </style>
+
+    <!-- Renamed for clarity and proper Material attribute usage -->
+    <style name="MyFridge.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/colorPrimaryLight</item>
+    </style>
+
+    <style name="MyFridge.Button.ShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">15dp</item>
+    </style>
+
+    <style name="Theme.MyFridge" parent="Base.Theme.MyFridge" />
+</resources>
