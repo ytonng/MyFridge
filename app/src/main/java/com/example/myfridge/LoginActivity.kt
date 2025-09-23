@@ -2,13 +2,11 @@ package com.example.myfridge
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.example.myfridge.databinding.ActivityLoginBinding
 import com.example.myfridge.viewmodel.LoginViewModel
@@ -106,7 +104,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToDashboard(username: String) {
-        val intent = Intent(this, Dashboard::class.java)
+        val intent = Intent(this, BottomNavHostActivity::class.java)
         intent.putExtra("USERNAME", username)
         startActivity(intent)
 

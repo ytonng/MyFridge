@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/item_dashboard"
+        android:title="Home"
+        android:icon="@drawable/ic_home" />
+
+    <item
+        android:id="@+id/item_recipe"
+        android:title="Recipe"
+        android:icon="@drawable/ic_recipe" />
+
+    <item
+        android:id="@+id/item_camera"
+        android:title="Views"
+        android:icon="@drawable/ic_camera" />
+
+    <item
+        android:id="@+id/item_fridge"
+        android:title="Fridge"
+        android:icon="@drawable/ic_food" />
+
+    <item
+        android:id="@+id/item_settings"
+        android:title="Settings"
+        android:icon="@drawable/ic_setting" />
+
+</menu>

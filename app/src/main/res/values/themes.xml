@@ -7,7 +7,7 @@
 
     <!-- Renamed for clarity and proper Material attribute usage -->
     <style name="MyFridge.Button" parent="Widget.Material3.Button">
-        <item name="backgroundTint">@color/colorPrimaryLight</item>
+        <item name="backgroundTint">@color/button_bgLight</item>
     </style>
 
     <style name="MyFridge.Button.ShapeAppearance">

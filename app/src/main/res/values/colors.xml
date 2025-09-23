@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary brand colors -->
-    <color name="colorPrimaryLight">#3F73D9</color>
-    <color name="colorOnPrimaryLight">#FFFFFF</color> <!-- text/icons on top of primary -->
-
     <!-- Button-specific color (can reuse primary if you like) -->
     <color name="button_bgLight">#3F73D9</color>
     <color name="button_textLight">#FFFFFF</color>
+    <color name="frame_bgLight">#f0f4fd</color>
+
     <!-- Dark theme primary variant -->
     <color name="colorPrimaryDark">#90CAF9</color>
     <color name="colorOnPrimaryDark">#000000</color> <!-- black text on light blue -->
