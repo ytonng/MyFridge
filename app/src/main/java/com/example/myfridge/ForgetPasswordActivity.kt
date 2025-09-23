@@ -1,7 +1,9 @@
 package com.example.myfridge
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +22,7 @@ class ForgetPasswordActivity : AppCompatActivity() {
 
         val emailInput = findViewById<TextInputEditText>(R.id.forgetpasswordEmailInput)
         val resetBtn = findViewById<Button>(R.id.forgetpasswordReset)
+        val loginLink = findViewById<TextView>(R.id.forgetpasswordLogin)
 
         resetBtn.setOnClickListener {
             val email = emailInput.text.toString().trim()
@@ -48,6 +51,11 @@ class ForgetPasswordActivity : AppCompatActivity() {
                     ).show()
                 }
             }
+        }
+
+        loginLink.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
         }
     }
 }
