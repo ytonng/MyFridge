@@ -5,12 +5,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
-import com.google.android.material.textfield.TextInputEditText
-import com.example.myfridge.data.SupabaseClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textfield.TextInputEditText
+import com.example.myfridge.data.SupabaseClient
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.user.UserSession
 import kotlinx.coroutines.launch
+import kotlin.time.ExperimentalTime
 
 class ResetPasswordActivity : AppCompatActivity() {
 
@@ -60,73 +62,84 @@ class ResetPasswordActivity : AppCompatActivity() {
         handleDeepLink(intent)
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun handleDeepLink(intent: Intent) {
         val data: Uri? = intent.data
 
-        // Add logging to see what we're actually receiving
-        if (data != null) {
-            android.util.Log.d("ResetPassword", "Received URI: $data")
-            android.util.Log.d("ResetPassword", "URI scheme: ${data.scheme}")
-            android.util.Log.d("ResetPassword", "URI host: ${data.host}")
-            android.util.Log.d("ResetPassword", "URI path: ${data.path}")
-            android.util.Log.d("ResetPassword", "URI query: ${data.query}")
-            android.util.Log.d("ResetPassword", "URI fragment: ${data.fragment}")
-        } else {
-            android.util.Log.d("ResetPassword", "No URI data received")
-        }
-
         if (data != null && data.scheme == "myfridge" && data.host == "resetpassword") {
+            lifecycleScope.launch {
+                try {
+                    // Extract tokens from URL
+                    val accessToken = data.getQueryParameter("access_token")
+                        ?: extractFromFragment(data, "access_token")
+                    val refreshToken = data.getQueryParameter("refresh_token")
+                        ?: extractFromFragment(data, "refresh_token")
+                    val tokenType = data.getQueryParameter("token_type")
+                        ?: extractFromFragment(data, "token_type")
 
-            // Check if we have the required parameters for password reset
-            val accessToken = data.getQueryParameter("access_token")
-                ?: extractFromFragment(data, "access_token")
+                    val errorParam = data.getQueryParameter("error")
+                    val errorDescription = data.getQueryParameter("error_description")
 
-            val refreshToken = data.getQueryParameter("refresh_token")
-                ?: extractFromFragment(data, "refresh_token")
+                    // Check for errors first
+                    if (errorParam != null) {
+                        Toast.makeText(
+                            this@ResetPasswordActivity,
+                            "Reset link error: $errorDescription",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        finish()
+                        return@launch
+                    }
 
-            val tokenType = data.getQueryParameter("token_type")
-                ?: extractFromFragment(data, "token_type")
+                    // If we have tokens, establish the session
+                    if (!accessToken.isNullOrEmpty() && !refreshToken.isNullOrEmpty()) {
+                        try {
+                            // Import the session using the tokens from the URL
+                            val userSession = UserSession(
+                                accessToken = accessToken,
+                                refreshToken = refreshToken,
+                                expiresIn = 3600, // 1 hour default
+                                tokenType = tokenType ?: "Bearer",
+                                user = null
+                            )
 
-            val errorParam = data.getQueryParameter("error")
-            val errorDescription = data.getQueryParameter("error_description")
+                            supabase.auth.importSession(userSession)
 
-            android.util.Log.d("ResetPassword", "Access token exists: ${!accessToken.isNullOrEmpty()}")
-            android.util.Log.d("ResetPassword", "Refresh token exists: ${!refreshToken.isNullOrEmpty()}")
-            android.util.Log.d("ResetPassword", "Token type: $tokenType")
-            android.util.Log.d("ResetPassword", "Error: $errorParam")
+                            isValidResetLink = true
+                            Toast.makeText(
+                                this@ResetPasswordActivity,
+                                "Reset link verified. Please enter your new password.",
+                                Toast.LENGTH_SHORT
+                            ).show()
 
-            // Check for errors first
-            if (errorParam != null) {
-                Toast.makeText(
-                    this,
-                    "Reset link error: $errorDescription",
-                    Toast.LENGTH_LONG
-                ).show()
-                finish()
-                return
-            }
-
-            // If we have access token, consider it valid
-            if (!accessToken.isNullOrEmpty()) {
-                isValidResetLink = true
-                Toast.makeText(
-                    this,
-                    "Reset link verified. Please enter your new password.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                // No tokens found
-                Toast.makeText(
-                    this,
-                    "Invalid reset link format. Please request a new one.",
-                    Toast.LENGTH_LONG
-                ).show()
-                finish()
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                this@ResetPasswordActivity,
+                                "Invalid or expired reset link. Please request a new one.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            finish()
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@ResetPasswordActivity,
+                            "Invalid reset link format. Please request a new one.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        finish()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this@ResetPasswordActivity,
+                        "Error processing reset link: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    finish()
+                }
             }
         } else {
             // If we get here without a deep link, it might be a direct launch
             if (data == null) {
-                android.util.Log.d("ResetPassword", "Activity launched without deep link data")
                 Toast.makeText(
                     this,
                     "Please use the reset link from your email.",
@@ -134,7 +147,6 @@ class ResetPasswordActivity : AppCompatActivity() {
                 ).show()
                 finish()
             } else {
-                android.util.Log.d("ResetPassword", "Deep link doesn't match expected scheme/host")
                 Toast.makeText(
                     this,
                     "Invalid reset link. Please request a new one.",
@@ -155,8 +167,7 @@ class ResetPasswordActivity : AppCompatActivity() {
     private fun resetPassword(newPassword: String) {
         lifecycleScope.launch {
             try {
-                // Simply try to update the password
-                // If the deep link was valid, Supabase should handle the authentication
+                // Update the user's password using the established session
                 supabase.auth.updateUser {
                     password = newPassword
                 }
@@ -167,6 +178,9 @@ class ResetPasswordActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
 
+                // Sign out to clear the reset session
+                supabase.auth.signOut()
+
                 // Navigate back to login
                 val intent = Intent(this@ResetPasswordActivity, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -174,7 +188,6 @@ class ResetPasswordActivity : AppCompatActivity() {
                 finish()
 
             } catch (e: Exception) {
-                android.util.Log.e("ResetPassword", "Error updating password", e)
                 Toast.makeText(
                     this@ResetPasswordActivity,
                     "Error updating password: ${e.message}. Please request a new reset link.",
