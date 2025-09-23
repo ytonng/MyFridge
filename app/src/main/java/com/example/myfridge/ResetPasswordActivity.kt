@@ -1,59 +1,39 @@
 package com.example.myfridge
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.textfield.TextInputEditText
-import com.example.myfridge.data.SupabaseClient
-import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.auth.user.UserSession
+import com.example.myfridge.databinding.ActivityResetPasswordBinding
+import com.example.myfridge.viewmodel.ResetPasswordViewModel
 import kotlinx.coroutines.launch
-import kotlin.time.ExperimentalTime
 
 class ResetPasswordActivity : AppCompatActivity() {
 
-    private val supabase by lazy { SupabaseClient.client }
-    private var isValidResetLink = false
+    private lateinit var binding: ActivityResetPasswordBinding
+    private val viewModel: ResetPasswordViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_reset_password)
+        binding = ActivityResetPasswordBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val passwordInput = findViewById<TextInputEditText>(R.id.resetpasswordPasswordInput)
-        val confirmInput = findViewById<TextInputEditText>(R.id.resetpasswordConfirmpasswordInput)
-        val resetBtn = findViewById<Button>(R.id.resetpasswordReset)
+        // Apply window insets
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        setupObservers()
+        setupClickListeners()
 
         // Handle deep link when activity is created
         handleDeepLink(intent)
-
-        resetBtn.setOnClickListener {
-            val pass = passwordInput.text.toString()
-            val confirm = confirmInput.text.toString()
-
-            if (!isValidResetLink) {
-                Toast.makeText(this, "Invalid reset session. Please request a new reset link.", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-
-            if (pass.isEmpty() || confirm.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (pass != confirm) {
-                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (pass.length < 8) {
-                Toast.makeText(this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            resetPassword(pass)
-        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -62,142 +42,80 @@ class ResetPasswordActivity : AppCompatActivity() {
         handleDeepLink(intent)
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun handleDeepLink(intent: Intent) {
-        val data: Uri? = intent.data
+        viewModel.handleDeepLink(intent.data)
+    }
 
-        if (data != null && data.scheme == "myfridge" && data.host == "resetpassword") {
-            lifecycleScope.launch {
-                try {
-                    // Extract tokens from URL
-                    val accessToken = data.getQueryParameter("access_token")
-                        ?: extractFromFragment(data, "access_token")
-                    val refreshToken = data.getQueryParameter("refresh_token")
-                        ?: extractFromFragment(data, "refresh_token")
-                    val tokenType = data.getQueryParameter("token_type")
-                        ?: extractFromFragment(data, "token_type")
+    private fun setupObservers() {
+        lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                // Show/hide loading
+                binding.resetpasswordReset.isEnabled = !state.isLoading
 
-                    val errorParam = data.getQueryParameter("error")
-                    val errorDescription = data.getQueryParameter("error_description")
+                // Handle input field errors
+                binding.resetpasswordPasswordLayout.error = state.passwordError
+                binding.resetpasswordPasswordLayout.errorIconDrawable = null
+                binding.resetpasswordConfirmpasswordLayout.error = state.confirmPasswordError
+                binding.resetpasswordConfirmpasswordLayout.errorIconDrawable = null
 
-                    // Check for errors first
-                    if (errorParam != null) {
-                        Toast.makeText(
-                            this@ResetPasswordActivity,
-                            "Reset link error: $errorDescription",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        finish()
-                        return@launch
+                // Handle status messages
+                state.statusMessage?.let { message ->
+                    Toast.makeText(this@ResetPasswordActivity, message, Toast.LENGTH_SHORT).show()
+                }
+
+                // Handle error messages
+                state.errorMessage?.let { error ->
+                    Toast.makeText(this@ResetPasswordActivity, error, Toast.LENGTH_LONG).show()
+
+                    // If it's an invalid/expired link error, navigate back
+                    if (error.contains("invalid", ignoreCase = true) ||
+                        error.contains("expired", ignoreCase = true) ||
+                        error.contains("request a new", ignoreCase = true)) {
+                        navigateToForgetPassword()
+                        return@collect
                     }
 
-                    // If we have tokens, establish the session
-                    if (!accessToken.isNullOrEmpty() && !refreshToken.isNullOrEmpty()) {
-                        try {
-                            // Import the session using the tokens from the URL
-                            val userSession = UserSession(
-                                accessToken = accessToken,
-                                refreshToken = refreshToken,
-                                expiresIn = 3600, // 1 hour default
-                                tokenType = tokenType ?: "Bearer",
-                                user = null
-                            )
+                    viewModel.clearError()
+                }
 
-                            supabase.auth.importSession(userSession)
+                // Handle success
+                if (state.isSuccess) {
+                    // Navigate to login after successful reset
+                    navigateToLogin()
+                }
 
-                            isValidResetLink = true
-                            Toast.makeText(
-                                this@ResetPasswordActivity,
-                                "Reset link verified. Please enter your new password.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                this@ResetPasswordActivity,
-                                "Invalid or expired reset link. Please request a new one.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            finish()
-                        }
-                    } else {
-                        Toast.makeText(
-                            this@ResetPasswordActivity,
-                            "Invalid reset link format. Please request a new one.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        finish()
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        this@ResetPasswordActivity,
-                        "Error processing reset link: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                // Handle invalid reset link (no deep link data)
+                if (!state.isValidResetLink && state.errorMessage != null) {
                     finish()
                 }
             }
-        } else {
-            // If we get here without a deep link, it might be a direct launch
-            if (data == null) {
-                Toast.makeText(
-                    this,
-                    "Please use the reset link from your email.",
-                    Toast.LENGTH_LONG
-                ).show()
-                finish()
-            } else {
-                Toast.makeText(
-                    this,
-                    "Invalid reset link. Please request a new one.",
-                    Toast.LENGTH_LONG
-                ).show()
-                finish()
-            }
         }
     }
 
-    private fun extractFromFragment(uri: Uri, paramName: String): String? {
-        return uri.fragment?.let { fragment ->
-            val fragmentParams = fragment.split("&")
-            fragmentParams.find { it.startsWith("$paramName=") }?.substringAfter("=")
+    private fun setupClickListeners() {
+        binding.resetpasswordReset.setOnClickListener {
+            val password = binding.resetpasswordPasswordInput.text.toString()
+            val confirmPassword = binding.resetpasswordConfirmpasswordInput.text.toString()
+
+            viewModel.resetPassword(password, confirmPassword)
         }
     }
 
-    private fun resetPassword(newPassword: String) {
-        lifecycleScope.launch {
-            try {
-                // Update the user's password using the established session
-                supabase.auth.updateUser {
-                    password = newPassword
-                }
+    private fun navigateToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
 
-                Toast.makeText(
-                    this@ResetPasswordActivity,
-                    "Password reset successful!",
-                    Toast.LENGTH_SHORT
-                ).show()
+    private fun navigateToForgetPassword() {
+        val intent = Intent(this, ForgetPasswordActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 
-                // Sign out to clear the reset session
-                supabase.auth.signOut()
-
-                // Navigate back to login
-                val intent = Intent(this@ResetPasswordActivity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-
-            } catch (e: Exception) {
-                Toast.makeText(
-                    this@ResetPasswordActivity,
-                    "Error updating password: ${e.message}. Please request a new reset link.",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                // Navigate back to forgot password
-                startActivity(Intent(this@ResetPasswordActivity, ForgetPasswordActivity::class.java))
-                finish()
-            }
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.resetState()
     }
 }
