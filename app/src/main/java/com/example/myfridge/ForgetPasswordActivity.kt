@@ -1,28 +1,53 @@
 package com.example.myfridge
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textfield.TextInputEditText
+import com.example.myfridge.data.SupabaseClient
+import io.github.jan.supabase.auth.auth
+import kotlinx.coroutines.launch
 
 class ForgetPasswordActivity : AppCompatActivity() {
+
+    private val supabase by lazy { SupabaseClient.client }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_forget_password)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
-        val forgetpasswordLogin = findViewById<TextView>(R.id.forgetpasswordLogin)
-        forgetpasswordLogin.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
+        val emailInput = findViewById<TextInputEditText>(R.id.forgetpasswordEmailInput)
+        val resetBtn = findViewById<Button>(R.id.forgetpasswordReset)
+
+        resetBtn.setOnClickListener {
+            val email = emailInput.text.toString().trim()
+
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            lifecycleScope.launch {
+                try {
+                    supabase.auth.resetPasswordForEmail(
+                        email = email,
+                        redirectUrl = "myfridge://resetpassword"
+                    )
+                    Toast.makeText(
+                        this@ForgetPasswordActivity,
+                        "Reset link sent to $email",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this@ForgetPasswordActivity,
+                        "Error: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 }

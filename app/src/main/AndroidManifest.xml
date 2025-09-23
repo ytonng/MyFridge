@@ -14,32 +14,47 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyFridge">
         <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="true">   <!-- must be true for deep links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="myfridge" android:host="resetpassword" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".BottomNavHostActivity"
             android:exported="false" />
+
         <activity
             android:name=".Dashboard"
             android:exported="false" />
+
         <activity
             android:name=".ForgetPasswordActivity"
             android:exported="false" />
+
         <activity
             android:name=".SignUpActivity"
             android:exported="false" />
+
         <activity
             android:name=".LoginActivity"
             android:exported="false" />
+
         <activity
             android:name=".AuthChoiceActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
