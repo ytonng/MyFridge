@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header Image with Close and Favorite buttons -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="280dp">
+
+            <ImageView
+                android:id="@+id/recipeImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_placeholder_recipe" />
+
+            <!-- Top gradient scrim for better button contrast -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_gravity="top"
+                android:background="@drawable/header_scrim" />
+
+            <ImageButton
+                android:id="@+id/buttonClose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_close_clear_cancel" />
+
+            <ImageButton
+                android:id="@+id/buttonFavorite"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="16dp"
+                android:layout_gravity="top|end"
+                android:src="@drawable/ic_favorite_border" />
+
+        </FrameLayout>
+
+        <!-- Recipe Title and Time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/recipeName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cabonara Pasta"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textSize="14sp"
+                android:textColor="#000000"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⭐"
+                android:textSize="14sp"/>
+
+            <!-- Removed header time; will show next to "What do you have?" below -->
+
+        </LinearLayout>
+
+        <!-- Clean Ingredients Availability -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/bg_card"
+            android:layout_marginBottom="12dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="What do you have?"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/totalTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15 min"
+                android:textSize="14sp"
+                android:textColor="#999999" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cleanIngredientsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_card"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Want to know more about this recipe ? \nClick the link below"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:paddingBottom="8dp"/>
+            <TextView
+                android:id="@+id/url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:textIsSelectable="true"
+                android:text="-" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_card"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tags"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="16sp"/>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupTagsDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                app:singleLine="false"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_card"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ingredients"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:paddingBottom="8dp"/>
+            <TextView
+                android:id="@+id/displayIngredients"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:lineSpacingExtra="6dp"
+                android:lineSpacingMultiplier="1.1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_card"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How to cook ?"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/steps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:lineSpacingExtra="6dp"
+                android:lineSpacingMultiplier="1.1"/>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

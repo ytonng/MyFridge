@@ -29,10 +29,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".Dashboard"
-            android:exported="false" />
-
-        <activity
             android:name=".ForgetPasswordActivity"
             android:exported="false" />
 
@@ -46,6 +42,10 @@
 
         <activity
             android:name=".AuthChoiceActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RecipeDetailActivity"
             android:exported="false" />
 
         <activity

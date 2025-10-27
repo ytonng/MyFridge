@@ -39,10 +39,10 @@ class BottomNavHostActivity : AppCompatActivity() {
             override fun onItemSelect(pos: Int): Boolean {
                 when (pos) {
                     0 -> loadFragment(DashboardFragment.newInstance(username))
-                    //1 -> loadFragment(RecipeFragment.newInstance())
-                    //2 -> loadFragment(ViewsFragment.newInstance())
-                    //3 -> loadFragment(MyFridgeFragment.newInstance())
-                    //4 -> loadFragment(SettingsFragment.newInstance())
+                    1 -> loadFragment(RecipeFragment())
+                    2 -> loadFragment(ViewsFragment())
+                    3 -> loadFragment(MyFridgeFragment())
+                    4 -> loadFragment(SettingsFragment())
                 }
                 return true
             }

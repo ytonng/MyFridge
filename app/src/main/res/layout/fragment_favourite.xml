@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefreshFavourite"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FavoriteFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/searchCardViewFavourite"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
+        app:layout_constraintEnd_toStartOf="@+id/spinnerSortFavourite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchViewFavourite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search favorites..." />
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewFavourite"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:padding="4dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchCardViewFavourite"
+        tools:listitem="@layout/item_recipe" />
+
+    <ProgressBar
+        android:id="@+id/progressBarFavourite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewEmptyFavourite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No favorite recipes yet"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/buttonSortFavourite"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="Sort favorites by available ingredients"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/arrow_down_float"
+        app:layout_constraintTop_toTopOf="@id/searchCardViewFavourite"
+        app:layout_constraintBottom_toBottomOf="@id/searchCardViewFavourite"
+        app:layout_constraintStart_toEndOf="@id/spinnerSortFavourite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/button_bgLight" />
+
+    <Spinner
+        android:id="@+id/spinnerSortFavourite"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintTop_toTopOf="@id/searchCardViewFavourite"
+        app:layout_constraintBottom_toBottomOf="@id/searchCardViewFavourite"
+        app:layout_constraintStart_toEndOf="@id/searchCardViewFavourite"
+        app:layout_constraintEnd_toStartOf="@id/buttonSortFavourite" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

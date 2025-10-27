@@ -52,6 +52,7 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:auth-kt:3.2.3")
     implementation("io.github.jan-tennert.supabase:postgrest-kt:3.2.3")
     implementation(platform("io.github.jan-tennert.supabase:bom:3.2.3"))
+    implementation("io.github.jan-tennert.supabase:functions-kt")
     implementation("io.github.jan-tennert.supabase:realtime-kt:3.2.3")
     implementation("io.github.jan-tennert.supabase:storage-kt:3.2.3")
     implementation("io.ktor:ktor-client-android:3.2.1") // <- ADD THIS LINE
@@ -59,6 +60,8 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    // Swipe-to-refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     // SmoothBottomBar
     implementation(libs.smoothbottombar)
     // Navigation Component
@@ -66,8 +69,19 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
     // Fragment KTX for easier fragment handling
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation(libs.androidx.cardview)
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     // Test dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation("io.ktor:ktor-client-okhttp:3.0.0")
+    implementation("io.ktor:ktor-client-websockets:3.0.0")
+    implementation("io.ktor:ktor-client-content-negotiation:3.0.0")
+
+    implementation("com.google.zxing:core:3.5.1")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-hls:2.19.1")
 }

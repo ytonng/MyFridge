@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.exceptions.RestException
+import io.github.jan.supabase.postgrest.postgrest
 import com.example.myfridge.data.SupabaseClient
 import android.util.Log
 import kotlinx.serialization.json.buildJsonObject
@@ -48,6 +49,28 @@ class SignUpViewModel : ViewModel() {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
             try {
+                // Pre-check: prevent duplicate signups by querying auth.users via RPC
+                val exists: Boolean = try {
+                    SupabaseClient.client.postgrest
+                        .rpc(
+                            "email_exists",
+                            buildJsonObject { put("p_email", email.trim()) }
+                        )
+                        .decodeAs<Boolean>()  // ← CORRECT: decodes a single value
+                } catch (rpcError: Exception) {
+                    Log.w("SignUp", "email_exists RPC failed, proceeding without pre-check", rpcError)
+                    false
+                }
+
+                if (exists) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isSuccess = false,
+                        errorMessage = "An account with this email address already exists."
+                    )
+                    return@launch
+                }
+
                 // Perform sign up with metadata
                 SupabaseClient.client.auth.signUpWith(Email) {
                     this.email = email.trim()
@@ -56,28 +79,32 @@ class SignUpViewModel : ViewModel() {
                         put("username", username.trim())
                     }
                 }
-                // Retrieve the user after signup
-                val user = SupabaseClient.client.auth.currentUserOrNull()
-
-                if (user == null) {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        isSuccess = false,
-                        errorMessage = "An account with this email address already exists."
-                    )
-                } else {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        isSuccess = true,
-                        errorMessage = null
-                    )
-                }
+                // If no exception is thrown, consider signup initiated successfully.
+                // Supabase may require email verification before a session exists.
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isSuccess = true,
+                    errorMessage = null
+                )
 
             } catch (e: RestException) {
                 Log.e("SignUp", "RestException during signup", e)
+                val message = e.message ?: ""
+                val friendly = when {
+                    (e.statusCode == 422 || e.statusCode == 409) ->
+                        "An account with this email address already exists."
+                    message.contains("already registered", ignoreCase = true) ||
+                            message.contains("already exists", ignoreCase = true) ->
+                        "An account with this email address already exists."
+                    message.contains("password", ignoreCase = true) &&
+                            message.contains("at least", ignoreCase = true) ->
+                        "Password too weak. Please use at least 8 characters."
+                    else -> "Authentication failed: ${e.message}"
+                }
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = "Authentication failed: ${e.message}"
+                    isSuccess = false,
+                    errorMessage = friendly
                 )
             } catch (e: Exception) {
                 Log.e("SignUp", "General exception during signup", e)
