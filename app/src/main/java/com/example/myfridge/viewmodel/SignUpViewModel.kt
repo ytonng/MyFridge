@@ -22,7 +22,8 @@ data class SignUpUIState(
     val emailError: String? = null,
     val passwordError: String? = null,
     val confirmPasswordError: String? = null,
-    val usernameError: String? = null
+    val usernameError: String? = null,
+    
 )
 
 class SignUpViewModel : ViewModel() {

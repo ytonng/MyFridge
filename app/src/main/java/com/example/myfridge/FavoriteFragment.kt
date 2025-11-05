@@ -27,6 +27,7 @@ class FavoriteFragment : Fragment() {
     private lateinit var buttonSortFavourite: View
     private lateinit var spinnerSortFavourite: Spinner
     private lateinit var searchViewFavourite: SearchView
+    private lateinit var buttonLoadMoreFavourite: com.google.android.material.button.MaterialButton
     private var sortAscendingFavourite: Boolean = false
     private var sortKeyFavouriteIsRating: Boolean = true
     private var favouriteQuery: String = ""
@@ -49,6 +50,7 @@ class FavoriteFragment : Fragment() {
         buttonSortFavourite = view.findViewById(R.id.buttonSortFavourite)
         spinnerSortFavourite = view.findViewById(R.id.spinnerSortFavourite)
         searchViewFavourite = view.findViewById(R.id.searchViewFavourite)
+        buttonLoadMoreFavourite = view.findViewById(R.id.buttonLoadMoreFavourite)
         
         setupRecyclerView()
         setupViewModel()
@@ -56,6 +58,26 @@ class FavoriteFragment : Fragment() {
 
         swipeRefresh.setOnRefreshListener {
             viewModel.refreshFavorites()
+        }
+
+        // Show Load More when scrolled to bottom and a search query is active
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(rv, dx, dy)
+                val atBottom = !rv.canScrollVertically(1)
+                val queryActive = !searchViewFavourite.query.isNullOrEmpty()
+                buttonLoadMoreFavourite.visibility = if (atBottom && queryActive) View.VISIBLE else View.GONE
+            }
+        })
+
+        buttonLoadMoreFavourite.setOnClickListener {
+            val queryActive = !searchViewFavourite.query.isNullOrEmpty()
+            if (queryActive) {
+                viewModel.loadMoreFavoriteSearch()
+            } else {
+                viewModel.refreshFavorites()
+            }
+            buttonLoadMoreFavourite.visibility = View.GONE
         }
     }
     
@@ -84,16 +106,8 @@ class FavoriteFragment : Fragment() {
         
         viewModel.favoriteRecipes.observe(viewLifecycleOwner) { recipes ->
             lastFavorites = recipes
-            val base = if (favouriteQuery.isBlank()) {
-                recipes
-            } else {
-                val q = favouriteQuery.lowercase()
-                recipes.filter { r ->
-                    (r.recipe_name.lowercase().contains(q)) ||
-                    ((r.tags ?: emptyList()).any { it.lowercase().contains(q) }) ||
-                    ((r.clean_ingredients ?: emptyList()).any { it.lowercase().contains(q) })
-                }
-            }
+            // Favorites list is already filtered remotely when query is active
+            val base = recipes
             val sorted = if (sortKeyFavouriteIsRating) {
                 if (sortAscendingFavourite) {
                     base.sortedBy { it.rating ?: Double.NEGATIVE_INFINITY }
@@ -197,54 +211,17 @@ class FavoriteFragment : Fragment() {
         searchViewFavourite.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 favouriteQuery = query?.trim() ?: ""
-                applyFilterAndSort()
+                viewModel.filterFavoriteRecipes(favouriteQuery)
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 favouriteQuery = newText?.trim() ?: ""
-                applyFilterAndSort()
+                viewModel.filterFavoriteRecipes(favouriteQuery)
                 return true
             }
         })
     }
 
-    private fun applyFilterAndSort() {
-        val base = if (favouriteQuery.isBlank()) {
-            lastFavorites
-        } else {
-            val q = favouriteQuery.lowercase()
-            lastFavorites.filter { r ->
-                (r.recipe_name.lowercase().contains(q)) ||
-                ((r.tags ?: emptyList()).any { it.lowercase().contains(q) }) ||
-                ((r.clean_ingredients ?: emptyList()).any { it.lowercase().contains(q) })
-            }
-        }
-        val sorted = if (sortKeyFavouriteIsRating) {
-            if (sortAscendingFavourite) {
-                base.sortedBy { it.rating ?: Double.NEGATIVE_INFINITY }
-            } else {
-                base.sortedByDescending { it.rating ?: Double.NEGATIVE_INFINITY }
-            }
-        } else {
-            val withTotals = base.map { r ->
-                val total = r.total_count ?: (r.clean_ingredients?.size
-                    ?: (r.display_ingredients?.size ?: 0))
-                r.copy(total_count = total)
-            }
-            if (sortAscendingFavourite) {
-                withTotals.sortedBy { it.total_count ?: 0 }
-            } else {
-                withTotals.sortedByDescending { it.total_count ?: 0 }
-            }
-        }
-        adapter.submitList(sorted)
-        if (sorted.isEmpty()) {
-            emptyView.visibility = View.VISIBLE
-            recyclerView.visibility = View.GONE
-        } else {
-            emptyView.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
-        }
-    }
+    // Local applyFilterAndSort no longer needed; ViewModel provides filtered favorites
 }

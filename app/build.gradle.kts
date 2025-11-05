@@ -84,4 +84,13 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-hls:2.19.1")
+
+    // ML Kit Text Recognition for scanning expiry date from images
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+    
+    // Google Sign-In for OAuth authentication
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+
+    // ImageSlideshow for dashboard carousel
+    implementation("com.github.denzcoskun:ImageSlideshow:0.1.2")
 }

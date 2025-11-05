@@ -3,7 +3,7 @@
     <!-- Button-specific color (can reuse primary if you like) -->
     <color name="button_bgLight">#3F73D9</color>
     <color name="button_textLight">#FFFFFF</color>
-    <color name="frame_bgLight">#f0f4fd</color>
+    <color name="frame_bgLight">#FFFFFF</color>
 
     <!-- Dark theme primary variant -->
     <color name="colorPrimaryDark">#90CAF9</color>

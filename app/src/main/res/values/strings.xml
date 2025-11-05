@@ -1,4 +1,45 @@
 <resources>
-    <!-- TODO: Remove or change this placeholder text -->
+    <!-- App name shown on launcher -->
+    <string name="app_name">My Fridge</string>
+    <!-- General -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_item">Add item</string>
+    <string name="ingredient_image">Ingredient image</string>
+    <string name="empty_fridge_title">No items yet</string>
+    <string name="empty_fridge_subtitle">Tap the + button to add ingredients</string>
+    <string name="close">Close</string>
+    <string name="add_item_description">Add item to your fridge</string>
+    <string name="item_name_label">Item name</string>
+    <string name="item_name_hint">Type or select an item</string>
+    <string name="quantity_label">Quantity</string>
+    <string name="quantity_unit_hint">Unit (e.g., pcs, g, ml)</string>
+    <string name="expired_date_label">Expired date</string>
+    <string name="expired_date_hint">Select a date</string>
+    <string name="scan_date">Scan date (image)</string>
+    <string name="add_on_label">Add on</string>
+    <string name="add_on_hint">YYYY-MM-DD</string>
+    <string name="add_by_label">Add by</string>
+    <string name="item_name_required">Please enter item name</string>
+    <string name="add_item_success">Item added</string>
+    <string name="add_item_failed">Failed to add item</string>
+    <string name="quantity_unit_required">Please enter quantity unit</string>
+    <string name="expired_date_required">Please select expired date</string>
+    <string name="expired_date_after_today_required">Expired date must be after today</string>
+    <string name="add_on_required">Please select add-on date</string>
+    <string name="fridge_name_placeholder">My Fridge</string>
+    <string name="delete_item">Delete item</string>
+    <string name="drag_here_to_delete">Drag here to delete</string>
+    <!-- Edit item flow -->
+    <string name="edit_item_title">Edit fridge item</string>
+    <string name="save_changes">Save changes</string>
+    <string name="update_item_success">Item updated</string>
+    <string name="update_item_failed">Failed to update item</string>
+    <!-- Bookmark -->
+    <string name="bookmark">Bookmark</string>
+    <string name="bookmarked">Bookmarked</string>
+    <string name="unbookmarked">Unbookmarked</string>
+    <string name="toggle_bookmark_failed">Failed to toggle bookmark</string>
+    
+    <!-- Google OAuth -->
+    <string name="default_web_client_id">856922108329-dg7l8nou649bpl3ablvmina52effj965.apps.googleusercontent.com</string>
 </resources>

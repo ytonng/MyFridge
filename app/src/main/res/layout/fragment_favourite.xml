@@ -5,6 +5,7 @@
     android:id="@+id/swipeRefreshFavourite"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".FavoriteFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,6 +19,7 @@
         android:layout_margin="8dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="2dp"
+        app:cardBackgroundColor="#f0f4fd"
         app:layout_constraintEnd_toStartOf="@+id/spinnerSortFavourite"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -88,5 +90,16 @@
         app:layout_constraintBottom_toBottomOf="@id/searchCardViewFavourite"
         app:layout_constraintStart_toEndOf="@id/searchCardViewFavourite"
         app:layout_constraintEnd_toStartOf="@id/buttonSortFavourite" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonLoadMoreFavourite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Load More"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

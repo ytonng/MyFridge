@@ -3,6 +3,7 @@ package com.example.myfridge.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myfridge.data.SupabaseClient
+import com.example.myfridge.data.model.FridgeRow
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.exceptions.RestException
@@ -14,13 +15,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-
-@Serializable
-data class FridgeRow(
-    val id: Long,
-    val serial_number: String,
-    val name: String? = null
-)
 
 data class AuthChoiceUIState(
     val isLoading: Boolean = false,

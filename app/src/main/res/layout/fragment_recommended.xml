@@ -9,18 +9,22 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#FFFFFF">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/searchCardView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        app:cardBackgroundColor="#f0f4fd"
         app:cardCornerRadius="8dp"
         app:cardElevation="2dp"
         app:layout_constraintEnd_toStartOf="@+id/spinnerSortKey"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="#E0E0E0"
+        app:strokeWidth="1dp">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
@@ -35,7 +39,11 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:padding="4dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="120dp"
+        android:background="#FFFFFF"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="2"
         android:orientation="vertical"
@@ -61,6 +69,7 @@
             android:id="@+id/chipGroupTags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:chipBackgroundColor="#f0f4fd"
             app:singleLine="true" />
     </HorizontalScrollView>
 
@@ -105,6 +114,7 @@
         android:layout_height="wrap_content"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        app:chipBackgroundColor="#f0f4fd"
         app:singleLine="false"
         app:layout_constraintTop_toBottomOf="@+id/chipGroupTagsScroll"
         app:layout_constraintStart_toStartOf="parent"

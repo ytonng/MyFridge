@@ -2,6 +2,7 @@ package com.example.myfridge
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -15,11 +16,14 @@ class SignUpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignUpBinding
     private val viewModel: SignUpViewModel by viewModels()
+    // Google Sign-In removed from SignUpActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Google sign-up removed from layout; email/password only
 
         setupObservers()
         setupClickListeners()
@@ -31,7 +35,6 @@ class SignUpActivity : AppCompatActivity() {
                 // Show/hide loading
                 binding.loadingProgressBar.isVisible = state.isLoading
                 binding.signupSignup.isEnabled = !state.isLoading
-                binding.signupContinuewitngoogle.isEnabled = !state.isLoading
 
                 // Handle input field errors
                 binding.signupUsernameLayout.error = state.usernameError
@@ -63,8 +66,7 @@ class SignUpActivity : AppCompatActivity() {
                         "Account created successfully! Please check your email for verification.",
                         Toast.LENGTH_LONG
                     ).show()
-
-                    // Navigate to login screen after successful signup
+                    // Navigate to login screen after email/password signup
                     navigateToLogin()
                 }
             }
@@ -87,18 +89,24 @@ class SignUpActivity : AppCompatActivity() {
             navigateToLogin()
         }
 
-        // Google sign up (placeholder - implement based on your needs)
-        binding.signupContinuewitngoogle.setOnClickListener {
-            // TODO: Implement Google Sign Up
-            Toast.makeText(this, "Google Sign Up - Coming Soon!", Toast.LENGTH_SHORT).show()
-        }
+        // Removed Google sign up action
     }
 
     private fun navigateToLogin() {
-        val intent = Intent(this, AuthChoiceActivity::class.java)
+        val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish() // Optional: finish current activity
     }
+
+    private fun navigateToDashboard(username: String) {
+        val intent = Intent(this, BottomNavHostActivity::class.java)
+        intent.putExtra("USERNAME", username)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    // Google sign-in method removed
 
     override fun onDestroy() {
         super.onDestroy()

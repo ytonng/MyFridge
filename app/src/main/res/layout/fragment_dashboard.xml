@@ -1,35 +1,228 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeRefreshDashboard"
+    android:background="#FFFFFF"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".DashboardFragment">
+    android:layout_height="match_parent">
 
-    <!-- Background decorative rectangle -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <!-- Header Row -->
+    <!-- Header Row -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:id="@+id/cardHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:cardBackgroundColor="#f0f4fd"
-        app:layout_constraintWidth_percent="1"
-        app:layout_constraintDimensionRatio="1:0.25"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        android:layout_marginBottom="8dp">
 
-    <!-- Text on top of CardView -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="20dp">
+
+            <!-- Avatar -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatarIcon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:contentDescription="User avatar"
+                android:src="@drawable/ic_user"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay_MyFridge_Circle"
+                app:strokeColor="#E0E0E0"
+                app:strokeWidth="1dp"
+                app:tint="#666666" />
+
+            <!-- Text Column -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/welcomeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="What's in your fridge today?"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#0F172A" />
+
+                <TextView
+                    android:id="@+id/textDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Friday, July 19"
+                    android:textSize="14sp"
+                    android:textColor="#667085" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+    <!-- Image Slider under header -->
+    <com.denzcoskun.imageslider.ImageSlider
+        android:id="@+id/imageSlider"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        app:iss_auto_cycle="true"
+        app:iss_period="3000"
+        app:iss_delay="500"
+        app:iss_text_align="CENTER" />
+
+    <!-- Summary bar under slider -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardFridgeSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#F0F4FD"
+        app:strokeColor="#E0E0E0"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textTotalItems"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total items: 0"
+                    android:textSize="16sp"
+                    android:textColor="#0F172A"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textExpiringSoon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Expiring soon: 0"
+                    android:textSize="14sp"
+                    android:textColor="#667085" />
+
+                <TextView
+                    android:id="@+id/textExpiredItems"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Expired: 0"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#D32F2F" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAddItem"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Add Item"
+                android:textSize="14sp"
+                app:cornerRadius="12dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:backgroundTint="@color/button_bgLight" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Nearest to expiry list and View More button -->
+    <LinearLayout
+        android:id="@+id/layoutNearestExpiry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp"
+        android:padding="0dp">
+
+        <!-- Empty placeholder when no nearest-expiry items -->
+        <TextView
+            android:id="@+id/textNearestEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="4dp"
+            android:text="No upcoming expiry items"
+            android:textSize="14sp"
+            android:textColor="#667085"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/containerNearestExpiring"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@android:color/darker_gray"
+            android:showDividers="middle"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonViewMore"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            app:cornerRadius="12dp"
+            android:layout_marginTop="8dp"
+            android:text="View More"
+            android:backgroundTint="@color/button_bgLight"/>
+    </LinearLayout>
+
+    <!-- Recommended recipes header -->
     <TextView
-        android:id="@+id/welcomeText"
+        android:id="@+id/textDashboardRecipesHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello, Dashboard!"
-        android:textSize="20sp"
+        android:layout_marginTop="20dp"
+        android:text="Here are some recipes for you"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:elevation="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView1"
-        app:layout_constraintEnd_toEndOf="@+id/cardView1"
-        app:layout_constraintStart_toStartOf="@+id/cardView1"
-        app:layout_constraintTop_toTopOf="@+id/cardView1" />
+        android:textColor="#0F172A" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Recommended recipes grid (1 row, 2 columns) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerRecommendedDashboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="never" />
+    </LinearLayout>
+  </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

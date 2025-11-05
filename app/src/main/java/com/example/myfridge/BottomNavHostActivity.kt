@@ -54,4 +54,13 @@ class BottomNavHostActivity : AppCompatActivity() {
             .replace(R.id.fragmentContainer, fragment)
             .commit()
     }
+
+    /**
+     * Programmatically navigate to the My Fridge tab and highlight it in the bottom bar.
+     */
+    fun navigateToMyFridge() {
+        // Highlight the My Fridge item (index 3) and load its fragment
+        binding.bottomBar.itemActiveIndex = 3
+        loadFragment(MyFridgeFragment())
+    }
 }

@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter
 import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.ImageButton
+import android.graphics.Color
+import android.content.res.ColorStateList
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -66,6 +68,9 @@ class RecommendedFragment : Fragment() {
         setupViewModel()
         setupSearchView()
 
+        // Populate suggested tags initially so chips are available without manual refresh
+        viewModel.refreshSuggestedTags()
+
         swipeRefresh.setOnRefreshListener {
             viewModel.onRecommendedTabSelected(currentTotalCountRecommended)
         }
@@ -75,14 +80,22 @@ class RecommendedFragment : Fragment() {
             override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(rv, dx, dy)
                 val atBottom = !rv.canScrollVertically(1)
-                val queryEmpty = searchView.query.isNullOrEmpty()
-                buttonLoadMore.visibility = if (atBottom && queryEmpty) View.VISIBLE else View.GONE
+                // Show for both recommended and search results
+                buttonLoadMore.visibility = if (atBottom) View.VISIBLE else View.GONE
             }
         })
 
         buttonLoadMore.setOnClickListener {
-            currentTotalCountRecommended += 20
-            viewModel.onRecommendedTabSelected(currentTotalCountRecommended)
+            val queryEmpty = searchView.query.isNullOrEmpty()
+            val hasActiveTags = (viewModel.selectedTags.value?.isNotEmpty() == true)
+            if (queryEmpty && !hasActiveTags) {
+                // No query and no tags: load more recommended
+                currentTotalCountRecommended += 20
+                viewModel.onRecommendedTabSelected(currentTotalCountRecommended)
+            } else {
+                // Query or tags present: load more search
+                viewModel.loadMoreSearch()
+            }
             buttonLoadMore.visibility = View.GONE
         }
     }
@@ -121,7 +134,9 @@ class RecommendedFragment : Fragment() {
                     buttonLoadMore.visibility = View.GONE
                 }
                 
-                val recipes = if (uiState.searchQuery.isEmpty()) {
+                // Use filtered results when either a text query or selected tags are active
+                val hasActiveTags = (viewModel.selectedTags.value?.isNotEmpty() == true)
+                val recipes = if (uiState.searchQuery.isEmpty() && !hasActiveTags) {
                     uiState.recommendedRecipes
                 } else {
                     uiState.filteredRecipes
@@ -145,15 +160,11 @@ class RecommendedFragment : Fragment() {
                             recipes.sortedByDescending { it.rating ?: Double.NEGATIVE_INFINITY }
                         }
                     } else {
-                        val withTotals = recipes.map { r ->
-                            val total = r.total_count ?: (r.clean_ingredients?.size
-                                ?: (r.display_ingredients?.size ?: 0))
-                            r.copy(total_count = total)
-                        }
+                        // Sort by availability count instead of raw ingredient total
                         if (sortAscendingRecommended) {
-                            withTotals.sortedBy { it.total_count ?: 0 }
+                            recipes.sortedBy { it.available_count ?: 0 }
                         } else {
-                            withTotals.sortedByDescending { it.total_count ?: 0 }
+                            recipes.sortedByDescending { it.available_count ?: 0 }
                         }
                     }
                     adapter.submitList(sorted)
@@ -193,15 +204,11 @@ class RecommendedFragment : Fragment() {
                     current.sortedByDescending { it.rating ?: Double.NEGATIVE_INFINITY }
                 }
             } else {
-                val withTotals = current.map { r ->
-                    val total = r.total_count ?: (r.clean_ingredients?.size
-                        ?: (r.display_ingredients?.size ?: 0))
-                    r.copy(total_count = total)
-                }
+                // Sort by availability count instead of raw ingredient total
                 if (sortAscendingRecommended) {
-                    withTotals.sortedBy { it.total_count ?: 0 }
+                    current.sortedBy { it.available_count ?: 0 }
                 } else {
-                    withTotals.sortedByDescending { it.total_count ?: 0 }
+                    current.sortedByDescending { it.available_count ?: 0 }
                 }
             }
             adapter.submitList(resorted)
@@ -225,15 +232,11 @@ class RecommendedFragment : Fragment() {
                         current.sortedByDescending { it.rating ?: Double.NEGATIVE_INFINITY }
                     }
                 } else {
-                    val withTotals = current.map { r ->
-                        val total = r.total_count ?: (r.clean_ingredients?.size
-                            ?: (r.display_ingredients?.size ?: 0))
-                        r.copy(total_count = total)
-                    }
+                    // Sort by availability count instead of raw ingredient total
                     if (sortAscendingRecommended) {
-                        withTotals.sortedBy { it.total_count ?: 0 }
+                        current.sortedBy { it.available_count ?: 0 }
                     } else {
-                        withTotals.sortedByDescending { it.total_count ?: 0 }
+                        current.sortedByDescending { it.available_count ?: 0 }
                     }
                 }
                 adapter.submitList(resorted)
@@ -272,6 +275,8 @@ class RecommendedFragment : Fragment() {
                 isCheckable = false
                 isClickable = true
                 isCloseIconVisible = false
+                chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#f0f4fd"))
+                setTextColor(Color.parseColor("#000000"))
                 setOnClickListener {
                     viewModel.addTag(tagName)
                 }
@@ -288,6 +293,8 @@ class RecommendedFragment : Fragment() {
                 isCheckable = false
                 isClickable = true
                 isCloseIconVisible = true
+                chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#f0f4fd"))
+                setTextColor(Color.parseColor("#000000"))
                 setOnCloseIconClickListener {
                     viewModel.removeTag(tagName)
                 }

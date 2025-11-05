@@ -15,6 +15,19 @@ class RecipeFragment : Fragment() {
 
     private lateinit var viewModel: RecipeViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Listen for fridge switch events and refresh recipe data
+        parentFragmentManager.setFragmentResultListener("fridge_switched", this) { _, bundle ->
+            val switchedId = bundle.getLong("fridgeId", -1L)
+            android.util.Log.d("RecipeFragment", "fridge_switched received: id=" + switchedId + ", refreshing recipes")
+            // ViewModel is created in onViewCreated; guard in case not yet initialized
+            if (this::viewModel.isInitialized) {
+                viewModel.refreshRecipes()
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

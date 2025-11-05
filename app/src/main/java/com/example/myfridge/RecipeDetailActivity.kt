@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.graphics.Color
+import android.content.res.ColorStateList
 import android.view.View
 import android.view.Gravity
 import android.widget.LinearLayout
@@ -58,6 +59,8 @@ class RecipeDetailActivity : AppCompatActivity() {
                             isCheckable = false
                             isClickable = false
                             isCloseIconVisible = false
+                            chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#f0f4fd"))
+                            setTextColor(Color.parseColor("#000000"))
                         }
                         binding.chipGroupTagsDetail.addView(chip)
                     }
