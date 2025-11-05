@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Circular avatar overlay -->
+    <style name="ShapeAppearanceOverlay_MyFridge_Circle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Optional: medium rounded overlay for non-circular avatars -->
+    <style name="ShapeAppearanceOverlay_MyFridge_RoundedMedium">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+</resources>
